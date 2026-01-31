@@ -1,0 +1,9 @@
+{
+  "name": "com.youtube.downloader",
+  "description": "YouTube Downloader Native Host - Executes yt-dlp commands",
+  "path": "/Users/YOUR_USERNAME/Library/Application Support/YouTube Downloader/host.py",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://YOUR_EXTENSION_ID/"
+  ]
+}

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Downloader - Settings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="48" height="48" rx="12" fill="#2c2c2c"/>
+            <path d="M16 24L22 30L32 18" stroke="#f4f3ee" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <h1>YouTube Downloader</h1>
+          <p class="subtitle">Settings & Configuration</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <!-- Setup Guide (shown on first install) -->
+      <section id="setupSection" class="section setup-section hidden">
+        <h2>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 16v-4m0-4h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Setup Required
+        </h2>
+        <div class="setup-steps">
+          <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h3>Install yt-dlp</h3>
+              <p>Open Terminal and run:</p>
+              <code>brew install yt-dlp</code>
+              <p class="note">Or: <code>pip3 install yt-dlp</code></p>
+            </div>
+          </div>
+          
+          <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h3>Install ffmpeg</h3>
+              <p>Open Terminal and run:</p>
+              <code>brew install ffmpeg</code>
+            </div>
+          </div>
+          
+          <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h3>Install Native Host</h3>
+              <p>Run the installation script:</p>
+              <code>./install-host.sh</code>
+              <p class="note">This configures the native messaging host.</p>
+            </div>
+          </div>
+          
+          <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <h3>Test Connection</h3>
+              <p>Click the button below to verify everything is working:</p>
+              <button class="btn-primary" id="setupTestBtn">Test Connection</button>
+              <div id="setupTestResult" class="test-result"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Connection Status -->
+      <section class="section">
+        <h2>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Connection Status
+        </h2>
+        <div class="status-card">
+          <div class="status-row">
+            <span>Native Host</span>
+            <span id="hostStatus" class="status-badge disconnected">Checking...</span>
+          </div>
+          <div class="status-row">
+            <span>yt-dlp Version</span>
+            <span id="ytdlpVersion" class="status-value">--</span>
+          </div>
+          <div class="status-row">
+            <span>ffmpeg Version</span>
+            <span id="ffmpegVersion" class="status-value">--</span>
+          </div>
+          <button class="btn-secondary" id="testConnectionBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 4v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M3.51 15a9 9 0 102.13-9.36L1 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Test Connection
+          </button>
+        </div>
+      </section>
+
+      <!-- Download Preferences -->
+      <section class="section">
+        <h2>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 3v12m0 0l-4-4m4 4l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Download Preferences
+        </h2>
+        
+        <div class="form-group">
+          <label class="form-label">Default Download Location</label>
+          <div class="path-input">
+            <input type="text" id="downloadPath" value="~/Downloads" readonly>
+            <button class="btn-secondary btn-sm" id="changePathBtn">Browse</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="autoSelectBest" checked>
+            <span class="checkbox-custom">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span>Auto-select best quality</span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="rememberQuality">
+            <span class="checkbox-custom">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span>Remember last quality choice</span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="defaultSubtitles">
+            <span class="checkbox-custom">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span>Include subtitles by default</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Format Defaults -->
+      <section class="section">
+        <h2>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="4" width="20" height="16" rx="3" stroke="currentColor" stroke-width="2"/>
+            <path d="M10 9v6l5-3-5-3z" fill="currentColor"/>
+          </svg>
+          Format Defaults
+        </h2>
+        
+        <div class="form-group">
+          <label class="form-label">Default Video Format</label>
+          <select id="defaultVideoFormat" class="select-input">
+            <option value="mp4">MP4</option>
+            <option value="webm">WebM</option>
+            <option value="mkv">MKV</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Default Audio Format</label>
+          <select id="defaultAudioFormat" class="select-input">
+            <option value="mp3-320">MP3 (320kbps)</option>
+            <option value="mp3-192">MP3 (192kbps)</option>
+            <option value="m4a">M4A</option>
+            <option value="opus">Opus</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Data Management -->
+      <section class="section">
+        <h2>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2v10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Data Management
+        </h2>
+        
+        <div class="action-buttons">
+          <button class="btn-secondary" id="clearHistoryBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Clear Download History
+          </button>
+          
+          <button class="btn-secondary" id="resetSettingsBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 4v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M23 20v-6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Reset to Defaults
+          </button>
+        </div>
+      </section>
+
+      <!-- About -->
+      <section class="section">
+        <h2>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 16v-4m0-4h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          About
+        </h2>
+        <div class="about-card">
+          <div class="about-row">
+            <span>Extension Version</span>
+            <span class="about-value">1.0.0</span>
+          </div>
+          <div class="about-row">
+            <span>Developer</span>
+            <span class="about-value">Personal Use</span>
+          </div>
+          <p class="about-note">
+            This extension uses yt-dlp for downloading videos. 
+            All processing is done locally on your machine.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>YouTube Downloader &copy; 2024 - For personal use only</p>
+    </footer>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

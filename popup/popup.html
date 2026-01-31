@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Downloader</title>
+  <link rel="stylesheet" href="popup.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="6" fill="#2c2c2c"/>
+            <path d="M8 12L11 15L16 9" stroke="#f4f3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h1 class="title">YouTube Downloader</h1>
+      </div>
+      <button class="settings-btn" id="settingsBtn" title="Settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 1v3m0 16v3M4.22 4.22l2.12 2.12m11.32 11.32l2.12 2.12M1 12h3m16 0h3M4.22 19.78l2.12-2.12m11.32-11.32l2.12-2.12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Loading State -->
+      <div id="loadingState" class="state loading-state">
+        <div class="skeleton skeleton-thumbnail"></div>
+        <div class="skeleton skeleton-title"></div>
+        <div class="skeleton skeleton-subtitle"></div>
+      </div>
+
+      <!-- Not YouTube State -->
+      <div id="notYoutubeState" class="state not-youtube-state hidden">
+        <div class="empty-state">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="16" width="48" height="32" rx="4" stroke="#6b6b6b" stroke-width="2"/>
+            <path d="M28 27v10l8-5-8-5z" fill="#6b6b6b"/>
+          </svg>
+          <h2>No Video Detected</h2>
+          <p>Navigate to a YouTube video page to download</p>
+        </div>
+      </div>
+
+      <!-- Video Info State -->
+      <div id="videoInfoState" class="state video-info-state hidden">
+        <!-- Video Preview -->
+        <div class="video-preview">
+          <img id="videoThumbnail" class="video-thumbnail" src="" alt="Video thumbnail">
+          <span id="videoDuration" class="video-duration">0:00</span>
+        </div>
+        
+        <div class="video-details">
+          <h2 id="videoTitle" class="video-title">Video Title</h2>
+          <p id="videoChannel" class="video-channel">Channel Name</p>
+        </div>
+
+        <!-- Download Type Toggle -->
+        <div class="toggle-group">
+          <button class="toggle-btn active" data-type="video" id="toggleVideo">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="4" width="20" height="16" rx="3" stroke="currentColor" stroke-width="2"/>
+              <path d="M10 9v6l5-3-5-3z" fill="currentColor"/>
+            </svg>
+            Video
+          </button>
+          <button class="toggle-btn" data-type="audio" id="toggleAudio">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 18V6l10-3v14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="2"/>
+              <circle cx="16" cy="17" r="3" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            Audio
+          </button>
+        </div>
+
+        <!-- Quality Selector -->
+        <div class="form-group" id="qualityGroup">
+          <label class="form-label">Quality</label>
+          <div class="custom-select" id="qualitySelect">
+            <button class="select-trigger" id="qualityTrigger">
+              <span id="qualityValue">Best Quality</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="select-dropdown" id="qualityDropdown">
+              <div class="select-option selected" data-value="best" data-format="bestvideo+bestaudio/best">
+                <span>Best Quality</span>
+                <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="select-option" data-value="4k" data-format="bestvideo[height<=2160]+bestaudio/best">
+                <span>4K (2160p)</span>
+                <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="select-option" data-value="1080p" data-format="bestvideo[height<=1080]+bestaudio/best">
+                <span>Full HD (1080p)</span>
+                <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="select-option" data-value="720p" data-format="bestvideo[height<=720]+bestaudio/best">
+                <span>HD (720p)</span>
+                <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="select-option" data-value="480p" data-format="bestvideo[height<=480]+bestaudio/best">
+                <span>SD (480p)</span>
+                <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="select-option" data-value="360p" data-format="bestvideo[height<=360]+bestaudio/best">
+                <span>Low (360p)</span>
+                <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Audio Quality Selector (hidden by default) -->
+        <div class="form-group hidden" id="audioQualityGroup">
+          <label class="form-label">Audio Quality</label>
+          <div class="custom-select" id="audioQualitySelect">
+            <button class="select-trigger" id="audioQualityTrigger">
+              <span id="audioQualityValue">MP3 (320kbps)</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="select-dropdown" id="audioQualityDropdown">
+              <div class="select-option selected" data-value="mp3-320" data-format="bestaudio" data-ext="mp3" data-quality="320">
+                <span>MP3 (320kbps)</span>
+                <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="select-option" data-value="mp3-192" data-format="bestaudio" data-ext="mp3" data-quality="192">
+                <span>MP3 (192kbps)</span>
+                <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="select-option" data-value="m4a" data-format="bestaudio[ext=m4a]/bestaudio" data-ext="m4a" data-quality="best">
+                <span>M4A (Best)</span>
+                <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="select-option" data-value="opus" data-format="bestaudio[ext=webm]/bestaudio" data-ext="opus" data-quality="best">
+                <span>Opus (Best)</span>
+                <svg class="check-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Format Selector -->
+        <div class="form-group" id="formatGroup">
+          <label class="form-label">Format</label>
+          <div class="format-buttons">
+            <button class="format-btn active" data-format="mp4">MP4</button>
+            <button class="format-btn" data-format="webm">WebM</button>
+            <button class="format-btn" data-format="mkv">MKV</button>
+          </div>
+        </div>
+
+        <!-- Subtitles Toggle -->
+        <div class="form-group checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="subtitlesCheckbox">
+            <span class="checkbox-custom">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span>Download subtitles (if available)</span>
+          </label>
+        </div>
+
+        <!-- Download Path -->
+        <div class="form-group">
+          <label class="form-label">Download Location</label>
+          <div class="path-selector">
+            <span id="downloadPath" class="path-text">~/Downloads</span>
+            <button class="change-path-btn" id="changePathBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Change
+            </button>
+          </div>
+        </div>
+
+        <!-- Download Button -->
+        <button class="btn-primary download-btn" id="downloadBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 3v12m0 0l-4-4m4 4l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Download</span>
+        </button>
+      </div>
+
+      <!-- Progress State -->
+      <div id="progressState" class="state progress-state hidden">
+        <div class="progress-header">
+          <img id="progressThumbnail" class="progress-thumbnail" src="" alt="Video thumbnail">
+          <div class="progress-info">
+            <h3 id="progressTitle" class="progress-title">Downloading...</h3>
+            <p id="progressFilename" class="progress-filename">video.mp4</p>
+          </div>
+        </div>
+
+        <div class="progress-bar-container">
+          <div class="progress-bar">
+            <div class="progress-bar-fill" id="progressBarFill" style="width: 0%"></div>
+          </div>
+          <span id="progressPercent" class="progress-percent">0%</span>
+        </div>
+
+        <div class="progress-stats">
+          <div class="stat">
+            <span class="stat-label">Speed</span>
+            <span id="downloadSpeed" class="stat-value">0 MB/s</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">ETA</span>
+            <span id="downloadEta" class="stat-value">--:--</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Size</span>
+            <span id="downloadSize" class="stat-value">0 / 0 MB</span>
+          </div>
+        </div>
+
+        <button class="btn-secondary cancel-btn" id="cancelBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Cancel Download
+        </button>
+      </div>
+
+      <!-- Success State -->
+      <div id="successState" class="state success-state hidden">
+        <div class="success-icon">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="32" cy="32" r="28" stroke="#4caf50" stroke-width="3"/>
+            <path d="M20 32l8 8 16-16" stroke="#4caf50" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2 class="success-title">Download Complete!</h2>
+        <p id="successFilename" class="success-filename">video.mp4</p>
+        
+        <div class="success-actions">
+          <button class="btn-primary" id="openFolderBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Open Folder
+          </button>
+          <button class="btn-secondary" id="downloadAnotherBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 3v12m0 0l-4-4m4 4l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Download Another
+          </button>
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div id="errorState" class="state error-state hidden">
+        <div class="error-icon">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="32" cy="32" r="28" stroke="#f44336" stroke-width="3"/>
+            <path d="M32 20v16" stroke="#f44336" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="32" cy="44" r="2" fill="#f44336"/>
+          </svg>
+        </div>
+        <h2 class="error-title">Download Failed</h2>
+        <p id="errorMessage" class="error-message">An error occurred while downloading the video.</p>
+        
+        <div class="error-actions">
+          <button class="btn-primary" id="retryBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 4v6h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M3.51 15a9 9 0 102.13-9.36L1 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Retry
+          </button>
+          <button class="btn-secondary" id="backBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 12H5m0 0l7 7m-7-7l7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Go Back
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <button class="footer-btn" id="historyBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        History
+      </button>
+      <span class="footer-version">v1.0.0</span>
+    </footer>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Settings</h2>
+        <button class="modal-close" id="closeSettingsBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Connection Status -->
+        <div class="settings-section">
+          <h3 class="settings-section-title">Connection Status</h3>
+          <div class="connection-status" id="connectionStatus">
+            <div class="status-indicator disconnected"></div>
+            <span>Checking connection...</span>
+          </div>
+          <button class="btn-secondary btn-sm" id="testConnectionBtn">Test Connection</button>
+        </div>
+
+        <!-- Defaults -->
+        <div class="settings-section">
+          <h3 class="settings-section-title">Default Settings</h3>
+          <label class="checkbox-label">
+            <input type="checkbox" id="autoSelectBest" checked>
+            <span class="checkbox-custom">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span>Auto-select best quality</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="rememberQuality">
+            <span class="checkbox-custom">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span>Remember last quality choice</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="defaultSubtitles">
+            <span class="checkbox-custom">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span>Include subtitles by default</span>
+          </label>
+        </div>
+
+        <!-- Versions -->
+        <div class="settings-section">
+          <h3 class="settings-section-title">Versions</h3>
+          <div class="version-info">
+            <div class="version-row">
+              <span>yt-dlp:</span>
+              <span id="ytdlpVersion">Checking...</span>
+            </div>
+            <div class="version-row">
+              <span>ffmpeg:</span>
+              <span id="ffmpegVersion">Checking...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="settings-section">
+          <h3 class="settings-section-title">Actions</h3>
+          <button class="btn-secondary btn-sm" id="clearHistoryBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Clear Download History
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Modal -->
+  <div id="historyModal" class="modal hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h2>Download History</h2>
+        <button class="modal-close" id="closeHistoryBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" id="historyList">
+        <div class="empty-history">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke="#6b6b6b" stroke-width="2"/>
+            <path d="M12 6v6l4 2" stroke="#6b6b6b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <p>No downloads yet</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js" type="module"></script>
+</body>
+</html>

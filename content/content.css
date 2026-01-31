@@ -1,0 +1,187 @@
+/**
+ * YouTube Downloader - Content Script Styles
+ * Styles for the download button overlay on YouTube
+ */
+
+/* ===== Download Button ===== */
+#ytd-download-overlay-btn {
+  position: absolute;
+  bottom: 60px;
+  right: 12px;
+  z-index: 1000;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  border-radius: 8px;
+  
+  color: #ffffff;
+  cursor: pointer;
+  
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Show button on player hover */
+#movie_player:hover #ytd-download-overlay-btn,
+#ytd-download-overlay-btn:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Hover state */
+#ytd-download-overlay-btn:hover {
+  background: rgba(244, 243, 238, 0.95);
+  color: #2c2c2c;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Active state */
+#ytd-download-overlay-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Focus state */
+#ytd-download-overlay-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(244, 243, 238, 0.5);
+}
+
+/* SVG Icon */
+#ytd-download-overlay-btn svg {
+  width: 22px;
+  height: 22px;
+  transition: transform 0.2s ease;
+}
+
+#ytd-download-overlay-btn:hover svg {
+  transform: translateY(2px);
+}
+
+/* Animation on successful click */
+@keyframes ytdButtonPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(76, 175, 80, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+  }
+}
+
+#ytd-download-overlay-btn.pulse {
+  animation: ytdButtonPulse 0.6s ease-out;
+}
+
+/* Fullscreen adjustments */
+.ytp-fullscreen #ytd-download-overlay-btn {
+  bottom: 80px;
+  right: 20px;
+  width: 52px;
+  height: 52px;
+}
+
+.ytp-fullscreen #ytd-download-overlay-btn svg {
+  width: 26px;
+  height: 26px;
+}
+
+/* Theater mode adjustments */
+.ytd-page-manager[theater] #ytd-download-overlay-btn {
+  bottom: 70px;
+}
+
+/* Mini player - hide button */
+.ytp-pip-window #ytd-download-overlay-btn {
+  display: none;
+}
+
+/* Loading state */
+#ytd-download-overlay-btn.loading {
+  pointer-events: none;
+}
+
+#ytd-download-overlay-btn.loading svg {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Tooltip */
+#ytd-download-overlay-btn::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 8px;
+  
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.85);
+  border-radius: 4px;
+  
+  color: white;
+  font-family: 'Roboto', 'YouTube Noto', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition: all 0.15s ease;
+  
+  pointer-events: none;
+}
+
+#ytd-download-overlay-btn:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Match YouTube's button style */
+#ytd-download-overlay-btn:not(:hover) {
+  background: rgba(28, 28, 28, 0.9);
+}
+
+/* Responsive for smaller players */
+@media (max-width: 640px) {
+  #ytd-download-overlay-btn {
+    width: 36px;
+    height: 36px;
+    bottom: 50px;
+    right: 8px;
+  }
+  
+  #ytd-download-overlay-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  #ytd-download-overlay-btn::after {
+    display: none;
+  }
+}
