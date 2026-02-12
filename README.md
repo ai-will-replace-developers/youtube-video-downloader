@@ -101,7 +101,7 @@ A premium-quality Chrome extension for downloading YouTube videos using yt-dlp a
 
 ---
 
-## Screenshots
+## Screenshot
 
 ![image alt](https://github.com/ai-will-replace-developers/youtube-video-downloader/blob/main/image.png?raw=true)
 
